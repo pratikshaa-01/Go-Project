@@ -51,6 +51,10 @@ pipeline {
                 script {
                     // Initialize Terraform workspace
                     sh "terraform init"
+                    
+                    // Validate the Terraform files before applying
+                    sh "terraform validate"
+
                     // Apply Terraform configuration to deploy AWS resources
                     withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                         sh """
