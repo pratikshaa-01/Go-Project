@@ -3,15 +3,13 @@ import pandas as pd
 import psycopg2
 from botocore.exceptions import ClientError
 
-# AWS clients
 s3_client = boto3.client('s3')
 glue_client = boto3.client('glue')
 
-# RDS connection parameters
-rds_host = 'your-rds-endpoint'
-rds_db = 'your-db'
-rds_user = 'your-username'
-rds_password = 'your-password'
+rds_host = 'enter-your-rds-endpoint'
+rds_db = 'enter-your-db'
+rds_user = 'enter-your-username'
+rds_password = 'enter-your-password'
 
 def fetch_s3_data(bucket, key):
     try:
@@ -44,16 +42,15 @@ def load_to_rds(data):
 
 def load_to_glue(data):
     try:
-        # Start Glue job
-        job_name = 'your-glue-job-name'
+        job_name = 'enter-your-glue-job-name'
         glue_client.start_job_run(JobName=job_name)
         print("Data sent to Glue.")
     except ClientError as e:
         print(f"Error starting Glue job: {e}")
 
 def main():
-    s3_bucket = 'your-s3-bucket'
-    s3_key = 'your-s3-key.csv'
+    s3_bucket = 'enter-your-s3-bucket'
+    s3_key = 'enter-your-s3-key.csv'
 
     data = fetch_s3_data(s3_bucket, s3_key)
     if data is not None:
