@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = "us-east-1"
         DOCKER_IMAGE = "s3-to-rds-glue-repository"
         ECR_REPOSITORY = "enter-your-AWS-Account-id.dkr.ecr.us-east-1.amazonaws.com"
-        AWS_ACCOUNT_ID = "326310722410"
+        AWS_ACCOUNT_ID = "enter-your-AWS-Account-id"
         ECR_URI = "${ECR_REPOSITORY}/${DOCKER_IMAGE}:latest"
         TF_WORKSPACE = "my-terraform-workspace"
     }
