@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = "us-east-1"
         DOCKER_IMAGE = "s3-to-rds-glue-repository"
         ECR_REPOSITORY = "326310722410.dkr.ecr.us-east-1.amazonaws.com"
-        AWS_ACCOUNT_ID = "326310722410"  // Your AWS Account ID
+        AWS_ACCOUNT_ID = "326310722410"
         ECR_URI = "${ECR_REPOSITORY}/${DOCKER_IMAGE}:latest"
         TF_WORKSPACE = "my-terraform-workspace"
     }
@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Clone GitHub Repository') {
             steps {
-                git 'https://github.com/pratikshaa-01/Go-Project'
+                git 'https://github.com/pratikshaa-01/Go-Project.git'
             }
         }
 
@@ -28,9 +28,21 @@ pipeline {
         stage('Login to AWS ECR') {
             steps {
                 script {
-                    // Get AWS credentials from environment or Jenkins credentials plugin
-                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}"
+                    // Login to AWS ECR using AWS CLI with AWS credentials
+                    withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
+                        try {
+                            echo "Logging in to AWS ECR in region ${AWS_REGION}"
+
+                            // Login to AWS ECR using AWS CLI
+                            sh """
+                                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}
+                            """
+                            echo "Login successful!"
+                        } catch (Exception e) {
+                            echo "Error during AWS ECR login: ${e.getMessage()}"
+                            currentBuild.result = 'FAILURE'
+                            error("AWS ECR login failed!")
+                        }
                     }
                 }
             }
@@ -56,7 +68,7 @@ pipeline {
                     sh "terraform validate"
 
                     // Apply Terraform configuration to deploy AWS resources
-                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
                         sh """
                             terraform apply -auto-approve \
                             -var="aws_access_key=${AWS_ACCESS_KEY_ID}" \
@@ -71,8 +83,8 @@ pipeline {
         stage('Trigger Lambda') {
             steps {
                 script {
-                    // Trigger your Lambda function if necessary
-                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    // Trigger Lambda function if necessary
+                    withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
                         sh """
                             aws lambda invoke \
                                 --function-name S3ToRDSGlueFunction \
