@@ -1,14 +1,14 @@
 # AWS Provider Configuration
 provider "aws" {
-  region = "us-east-1"  # Set your preferred AWS region
+  region = "us-east-1" 
 }
 
-# Create a Random ID to ensure unique bucket name
+# Create a random bucket 
 resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-# Create an S3 Bucket (removed ACL)
+# Create an S3 Bucket 
 resource "aws_s3_bucket" "my_bucket" {
   bucket = "my-s3-bucket-terraform-${random_id.bucket_suffix.hex}"
 }
@@ -26,7 +26,7 @@ id,name,age
 EOF
 }
 
-# IAM Role for Lambda with permissions for S3, RDS, and Glue
+# IAM Role for Lambda with permissions 
 resource "aws_iam_role" "lambda_role" {
   name = "lambda_s3_rds_glue_role"
 
@@ -83,7 +83,7 @@ resource "aws_iam_policy_attachment" "lambda_rds_policy_attachment" {
   roles      = [aws_iam_role.lambda_role.name]
 }
 
-# Create an RDS MySQL Instance 
+# Create RDS MySQL Instance 
 resource "aws_db_instance" "my_rds" {
   allocated_storage    = 20
   storage_type         = "gp2"
@@ -127,7 +127,6 @@ resource "aws_lambda_function" "my_lambda" {
     }
   }
 
-  # No need for handler and runtime when using Docker image
   package_type = "Image"
 }
 
