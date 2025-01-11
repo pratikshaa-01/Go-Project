@@ -20,9 +20,9 @@ resource "aws_s3_object" "csv_file" {
   acl    = "private"
   content = <<EOF
 id,name,age
-1,John Doe,30
-2,Jane Smith,25
-3,Bob Johnson,40
+1,pratiksha Pawar,30
+2,Madhavi gaikwad,25
+3,Naina Pal,40
 EOF
 }
 
@@ -58,7 +58,7 @@ resource "aws_iam_policy_attachment" "glue_policy_attachment" {
   roles      = [aws_iam_role.lambda_role.name]
 }
 
-# Attach a custom RDS policy to the Lambda role (if you need to use IAM RDS access)
+# Attach a custom RDS policy to the Lambda role 
 resource "aws_iam_policy" "rds_policy" {
   name        = "lambda-rds-policy"
   description = "Lambda access to RDS instances"
@@ -83,7 +83,7 @@ resource "aws_iam_policy_attachment" "lambda_rds_policy_attachment" {
   roles      = [aws_iam_role.lambda_role.name]
 }
 
-# Create an RDS MySQL Instance (public access)
+# Create an RDS MySQL Instance 
 resource "aws_db_instance" "my_rds" {
   allocated_storage    = 20
   storage_type         = "gp2"
@@ -113,7 +113,7 @@ resource "aws_glue_catalog_database" "my_glue_db" {
 resource "aws_lambda_function" "my_lambda" {
   function_name = "S3ToRDSGlueFunction"
   role          = aws_iam_role.lambda_role.arn
-  image_uri     = "326310722410.dkr.ecr.us-east-1.amazonaws.com/s3-to-rds-glue-repository:latest"
+  image_uri     = "you-AWS-Account-id.dkr.ecr.us-east-1.amazonaws.com/s3-to-rds-glue-repository:latest"
 
   environment {
     variables = {
