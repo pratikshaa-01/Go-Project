@@ -28,12 +28,11 @@ pipeline {
         stage('Login to AWS ECR') {
             steps {
                 script {
-                    // Login to AWS ECR using AWS CLI with AWS credentials
                     withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
                         try {
                             echo "Logging in to AWS ECR in region ${AWS_REGION}"
 
-                            // Login to AWS ECR using AWS CLI
+                            
                             sh """
                                 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPOSITORY}
                             """
@@ -51,7 +50,7 @@ pipeline {
         stage('Push Docker Image to ECR') {
             steps {
                 script {
-                    // Tag and push the Docker image to ECR
+                    
                     sh "docker tag ${DOCKER_IMAGE} ${ECR_URI}"
                     sh "docker push ${ECR_URI}"
                 }
@@ -61,13 +60,11 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    // Initialize Terraform workspace
+                   
                     sh "terraform init"
-                    
-                    // Validate the Terraform files before applying
+               
                     sh "terraform validate"
 
-                    // Apply Terraform configuration to deploy AWS resources
                     withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
                         sh """
                             terraform apply -auto-approve \
@@ -83,7 +80,7 @@ pipeline {
         stage('Trigger Lambda') {
             steps {
                 script {
-                    // Trigger Lambda function if necessary
+                   
                     withAWS(credentials: 'aws-credentials', region: AWS_REGION) {
                         sh """
                             aws lambda invoke \
